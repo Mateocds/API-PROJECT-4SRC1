@@ -1,6 +1,6 @@
 <?php
 
-include "API/Alerting.php";
+require_once 'API/Alerting.php';
 
 function fmt_date() {
     return date('D, d M Y H:i:s T');
@@ -54,7 +54,8 @@ function get_cpu() {
             "total_usage_percent" => (float) $usage,
             "logical_cores"       => (int) $logical,
             "physical_cores"      => (int) $physical,
-            "checked_at"          => fmt_date()
+            "checked_at"          => fmt_date(),
+            "alert_triggered"    => false
         ];
     }
 

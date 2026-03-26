@@ -2,7 +2,7 @@
 
 function TryToConnect()
 {
-    if (empty($_ENV('TOKEN')) === null || empty($_ENV['TOKEN']) ){
+    if (empty($_ENV['TOKEN']) === null || empty($_ENV['TOKEN']) ){
         $userData = [
             "name"                  => $_ENV['NAME'],
             "email"                 => $_ENV['EMAIL'],
@@ -127,7 +127,7 @@ function CreateAlertingMemory($MemoryUsage, $Hostname) {
         $AlertingData = [
             "Title" => "Alerte RAM -- Utilisation à" . $MemoryUsage,
             "Description" => "La Machine". $Hostname. "est arrivé à". $MemoryUsage. "% d'utilisation du CPU à". date("d/m/Y H:i:s"),
-            "application_id" => $_ENV["APP_ID"],
+            "application_id" => $_ENV["ID_APP"],
             "status" => "OPEN",
             "severity" => $severity,
             "start_date" => date("Y-m-d"),
@@ -148,7 +148,7 @@ function CreateAlertingMemory($MemoryUsage, $Hostname) {
         $httpCodeAlert = curl_getinfo($chAlert, CURLINFO_HTTP_CODE);
         curl_close($chAlert);
         if ($httpCodeAlert === 201 || $httpCodeAlert === 200) {
-            return ($result['data']['id']and  $severity);
+            return ['id' => $result['data']['id'], 'severity' => $severity];
         }
         else {
             echo "Erreur ({$httpCodeAlert}) : " . ($result['message']);
@@ -197,7 +197,7 @@ function CreateAlertingCPU($cpuUsage, $Hostname) {
         $httpCodeAlert = curl_getinfo($chAlert, CURLINFO_HTTP_CODE);
         curl_close($chAlert);
         if ($httpCodeAlert === 201 || $httpCodeAlert === 200) {
-            return ($result['data']['id'] and  $severity);
+            return ['id' => $result['data']['id'], 'severity' => $severity];
         }
         else {
             echo "Erreur ({$httpCodeAlert}) : " . ($result['message']);
