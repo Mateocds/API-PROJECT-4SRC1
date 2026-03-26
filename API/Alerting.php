@@ -129,8 +129,8 @@ function CreateAlertingMemory($MemoryUsage, $Hostname) {
             $severity = "CRITICAL";
         }
         $AlertingData = [
-            "Title" => "Alerte RAM -- Utilisation à" . $MemoryUsage,
-            "Description" => "La Machine". $Hostname. "est arrivé à". $MemoryUsage. "% d'utilisation du CPU à". date("d/m/Y H:i:s"),
+            "title" => "Alerte RAM -- Utilisation à" . $MemoryUsage,
+            "description" => "La Machine". $Hostname. "est arrivé à". $MemoryUsage. "% d'utilisation du CPU à". date("d/m/Y H:i:s"),
             "application_id" => $_ENV["ID_APP"],
             "status" => "OPEN",
             "severity" => $severity,
@@ -149,7 +149,7 @@ function CreateAlertingMemory($MemoryUsage, $Hostname) {
 
         $responseAlert = curl_exec($chAlert);
         $result = json_decode($responseAlert, true);
-        var_dump($result);
+
         $httpCodeAlert = curl_getinfo($chAlert, CURLINFO_HTTP_CODE);
         curl_close($chAlert);
         if ($httpCodeAlert === 201 || $httpCodeAlert === 200) {
