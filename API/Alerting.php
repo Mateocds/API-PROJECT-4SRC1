@@ -1,6 +1,6 @@
 <?php
 
-function TryToConnect()
+/*function TryToConnect()
 {
     if (empty($_ENV['TOKEN']) === null || empty($_ENV['TOKEN']) ){
         $userData = [
@@ -55,7 +55,9 @@ function TryToConnect()
             if ($newToken) {
                 $envPath = __DIR__ . '/.env';
                 $oldContent = file_get_contents($envPath);
-                $newContent = preg_replace("/^TOKEN=.*/m", "TOKEN=" . trim($newToken), $oldContent);
+                $newContent = preg_replace("/^TOKEN=.*/
+
+/*m", "TOKEN=" . trim($newToken), $oldContent);
 
                 file_put_contents($envPath, $newContent);
 
@@ -92,7 +94,9 @@ function TryToConnect()
                 $envPath = __DIR__ . '/.env';
                 $oldContent = file_get_contents($envPath);
 
-                $newContent = preg_replace("/^ID_APP=.*/m", "ID_APP=" . trim($IDAPP), $oldContent);
+                $newContent = preg_replace("/^ID_APP=.*/
+
+/*m", "ID_APP=" . trim($IDAPP), $oldContent);
 
                 file_put_contents($envPath, $newContent);
 
@@ -108,12 +112,12 @@ function TryToConnect()
     }
     echo ("RAS");
 
-}
+}*/
 
 
 
 function CreateAlertingMemory($MemoryUsage, $Hostname) {
-    TryToConnect();
+    //TryToConnect();
 
     if($MemoryUsage>=30){
         $severity="none";
@@ -163,7 +167,7 @@ function CreateAlertingMemory($MemoryUsage, $Hostname) {
 }
 
 function CreateAlertingCPU($cpuUsage, $Hostname) {
-    TryToConnect();
+    //TryToConnect();
 
     if($cpuUsage>=30){
         $severity="none";
@@ -211,7 +215,7 @@ function CreateAlertingCPU($cpuUsage, $Hostname) {
 
 }
 function CreateAlertingDisk($diskUsage, $Hostname) {
-    TryToConnect();
+   // TryToConnect();
 
     if($diskUsage>=30){
         $severity="none";
@@ -249,7 +253,7 @@ function CreateAlertingDisk($diskUsage, $Hostname) {
             return ($result['data']['id'] and  $severity);
         }
         else {
-            echo "Erreur ({$httpCodeAlert}) : " . ($result['message']);
+            echo "Erreur ";
 
         }
 
