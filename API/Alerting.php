@@ -179,8 +179,8 @@ function CreateAlertingCPU($cpuUsage, $Hostname) {
             $severity = "CRITICAL";
         }
         $AlertingData = [
-            "Title" => "Alerte CPU -- Utilisation à" . $cpuUsage,
-            "Description" => "La Machine". $Hostname. "est arrivé à". $cpuUsage. "% d'utilisation du CPU à". date("d/m/Y H:i:s"),
+            "title" => "Alerte CPU -- Utilisation à" . $cpuUsage,
+            "description" => "La Machine". $Hostname. "est arrivé à". $cpuUsage. "% d'utilisation du CPU à". date("d/m/Y H:i:s"),
             "application_id" => $_ENV["ID_APP"],
             "status" => "OPEN",
             "severity" => $severity,
