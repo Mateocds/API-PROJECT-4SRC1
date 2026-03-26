@@ -1,5 +1,7 @@
 <?php
 
+include "API/Alerting.php";
+
 function fmt_date() {
     return date('D, d M Y H:i:s T');
 }
@@ -14,12 +16,14 @@ function get_health() {
     $hostname = run_ps('hostname');
     $os       = run_ps('(Get-WmiObject Win32_OperatingSystem).Caption');
 
+
     return [
         "status"     => "UP",
         "hostname"   => $hostname,
         "os"         => "windows",
         "platform"   => $os,
         "checked_at" => fmt_date()
+
     ];
 }
 
@@ -27,13 +31,34 @@ function get_cpu() {
     $usage    = run_ps('(Get-WmiObject Win32_Processor | Measure-Object -Property LoadPercentage -Average).Average');
     $logical  = run_ps('(Get-WmiObject Win32_ComputerSystem).NumberOfLogicalProcessors');
     $physical = run_ps('(Get-WmiObject Win32_Processor).NumberOfCores');
+    $hostname = run_ps('hostname');
 
-    return [
-        "total_usage_percent" => (float) $usage,
-        "logical_cores"       => (int) $logical,
-        "physical_cores"      => (int) $physical,
-        "checked_at"          => fmt_date()
-    ];
+    if ($usage >= 30){
+         $result = CreateAlertingCPU($usage, $hostname);
+
+        return [
+            "total_usage_percent" => (float) $usage,
+            "logical_cores"       => (int) $logical,
+            "physical_cores"      => (int) $physical,
+            "checked_at"          => fmt_date(),
+            "alert_triggered"  =>  true,
+            "incident" => [
+                "id" => $result["id"],
+                "severity" => $result["severity"],
+                "message"=> "Incident created on monitoring platform"
+
+            ]
+        ];
+    }else {
+        return [
+            "total_usage_percent" => (float) $usage,
+            "logical_cores"       => (int) $logical,
+            "physical_cores"      => (int) $physical,
+            "checked_at"          => fmt_date()
+        ];
+    }
+
+
 }
 
 function get_memory() {
@@ -44,29 +69,72 @@ function get_memory() {
     $free  = round($free_bytes  / 1e9);
     $used  = $total - $free;
     $pct   = round(($used / $total) * 100, 2);
+    $hostname = run_ps('hostname');
 
-    return [
-        "total_gb"     => $total,
-        "used_gb"      => $used,
-        "free_gb"      => $free,
-        "used_percent" => $pct,
-        "checked_at"   => fmt_date()
-    ];
-}
+    if ($pct > 30 ){
+        $result = CreateAlertingMemory($pct, $hostname);
+        return [
+            "total_gb"     => $total,
+            "used_gb"      => $used,
+            "free_gb"      => $free,
+            "used_percent" => $pct,
+            "checked_at"   => fmt_date(),
+            "alert_triggered" => true,
+            "incident" => [
+                "id" => $result["id"],
+                "severity" => $result["severity"],
+                "message"=> "Incident created on monitoring platform"
+            ]
+        ];
+    }else{
+        return [
+            "total_gb"     => $total,
+            "used_gb"      => $used,
+            "free_gb"      => $free,
+            "used_percent" => $pct,
+            "checked_at"   => fmt_date(),
+            "alert_triggered" => false,
+        ];
+    }
+    }
+
+
+
 
 function get_disk() {
     $total = disk_total_space('C:');
     $free  = disk_free_space('C:');
     $used  = $total - $free;
     $pct   = round(($used / $total) * 100, 2);
+    $hostname = run_ps('hostname');
 
-    return [
-        "total_gb"     => round($total / 1e9),
-        "used_gb"      => round($used  / 1e9),
-        "free_gb"      => round($free  / 1e9),
-        "used_percent" => $pct,
-        "checked_at"   => fmt_date()
-    ];
+    if ($pct > 30 ){
+        $result = CreateAlertingDisk($total, $hostname);
+        return [
+            "total_gb"     => round($total / 1e9),
+            "used_gb"      => round($used  / 1e9),
+            "free_gb"      => round($free  / 1e9),
+            "used_percent" => $pct,
+            "checked_at"   => fmt_date(),
+            "alert_triggered" => true,
+            "incident" => [
+                "id" => $result["id"],
+                "severity" => $result["severity"],
+                "message"=> "Incident created on monitoring platform"
+            ]
+        ];
+    }else {
+        return [
+            "total_gb"     => round($total / 1e9),
+            "used_gb"      => round($used  / 1e9),
+            "free_gb"      => round($free  / 1e9),
+            "used_percent" => $pct,
+            "checked_at"   => fmt_date(),
+            "alert_triggered" => false,
+        ];
+
+    }
+
 }
 
 function get_all() {
