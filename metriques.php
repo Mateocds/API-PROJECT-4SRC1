@@ -62,6 +62,41 @@ function get_cpu() {
 
 }
 
+function get_incidents() {
+    $Incidents_url = "https://monitoring-app.on-forge.com/api/v1/incidents";
+    $chIncidents = curl_init($Incidents_url);
+    curl_setopt($chIncidents, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($chIncidents, CURLOPT_HTTPGET, true);
+    curl_setopt($chIncidents, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Accept: application/json',
+        'Authorization: Bearer ' . $_ENV["TOKEN"]
+    ]);
+
+    $responseAlert = curl_exec($chIncidents);
+    $result = json_decode($responseAlert, true);
+    curl_close($chIncidents);
+
+    $incidents = $result['data'];
+    $formattedIncidents = array_map(function($incident) {
+        return [
+            "id"         => $incident['id'],
+            "title"      => $incident['title'],
+            "severity"   => $incident['severity'],
+            "status"     => $incident['status'],
+            "start_date" => $incident['started_at'],
+        ];
+    }, $incidents);
+
+    $response = [
+        "incidents"  => $formattedIncidents,
+        "total"      => count($formattedIncidents),
+        "checked_at" => date("D, d M Y H:i:s T"),
+    ];
+
+    header('Content-Type: application/json');
+    echo json_encode($response, JSON_PRETTY_PRINT);
+}
 function get_memory() {
     $total_bytes = run_ps('(Get-WmiObject Win32_ComputerSystem).TotalPhysicalMemory');
     $free_bytes  = run_ps('(Get-WmiObject Win32_OperatingSystem).FreePhysicalMemory * 1024');

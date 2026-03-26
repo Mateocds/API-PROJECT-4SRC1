@@ -30,5 +30,6 @@ match($uri) {
     '/memory' => send(get_memory()),
     '/disk'   => send(get_disk()),
     '/all'    => send(get_all()),
+    '/incidents' => send(get_incidents()),
     default   => send_error('Endpoint not found', 404)
 };
