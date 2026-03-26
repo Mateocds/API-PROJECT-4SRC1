@@ -227,8 +227,8 @@ function CreateAlertingDisk($diskUsage, $Hostname) {
             $severity = "CRITICAL";
         }
         $AlertingData = [
-            "Title" => "Alerte CPU -- Utilisation à" . $diskUsage,
-            "Description" => "La Machine". $Hostname. "est arrivé à". $diskUsage. "% d'utilisation du disque à". date("d/m/Y H:i:s"),
+            "title" => "Alerte CPU -- Utilisation à" . $diskUsage,
+            "description" => "La Machine". $Hostname. "est arrivé à". $diskUsage. "% d'utilisation du disque à". date("d/m/Y H:i:s"),
             "application_id" => $_ENV["ID_APP"],
             "status" => "OPEN",
             "severity" => $severity,
@@ -250,7 +250,7 @@ function CreateAlertingDisk($diskUsage, $Hostname) {
         $httpCodeAlert = curl_getinfo($chAlert, CURLINFO_HTTP_CODE);
         curl_close($chAlert);
         if ($httpCodeAlert === 201 || $httpCodeAlert === 200) {
-            return ($result['data']['id'] and  $severity);
+            return ['id' => $result['data']['id'], 'severity' => $severity];
         }
         else {
             echo "Erreur". $AlertingData["application_id"] ." ".$result." ".$httpCodeAlert;
