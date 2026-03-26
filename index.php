@@ -1,3 +1,7 @@
 <?php
 header("Content-Type: application/json");
-include 'alerts.php';
+include 'API/Alerting.php';
+require 'vendor/autoload.php';
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
