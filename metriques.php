@@ -46,6 +46,7 @@ function get_cpu() {
                 "id" => $result["id"],
                 "severity" => $result["severity"],
                 "message"=> "Incident created on monitoring platform"
+
             ]
         ];
     }else {
