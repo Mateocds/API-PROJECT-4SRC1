@@ -70,7 +70,7 @@ function TryToConnect()
             "name"=> "Sonde Monitoring - API_PROJECT",
             "url"=> "http://localhost:8000"
         ];
-        $urlRegisterAPP = "https://monitoring-app.on-forge.com/api/applications";
+        $urlRegisterAPP = "https://monitoring-app.on-forge.com/api/v1/applications";
         $chRegisterAPP = curl_init($urlRegisterAPP);
         curl_setopt($chRegisterAPP, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($chRegisterAPP, CURLOPT_POST, true);
@@ -177,7 +177,7 @@ function CreateAlertingCPU($cpuUsage, $Hostname) {
         $AlertingData = [
             "Title" => "Alerte CPU -- Utilisation à" . $cpuUsage,
             "Description" => "La Machine". $Hostname. "est arrivé à". $cpuUsage. "% d'utilisation du CPU à". date("d/m/Y H:i:s"),
-            "application_id" => $_ENV["APP_ID"],
+            "application_id" => $_ENV["ID_APP"],
             "status" => "OPEN",
             "severity" => $severity,
             "start_date" => date("Y-m-d"),
