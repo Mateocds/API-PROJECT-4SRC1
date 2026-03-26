@@ -35,14 +35,21 @@ func clearScreen() {
 	cmd.Run()
 }
 
-func State(_option int, _target string) {
+func State(_option string, _target string) {
 	for {
 		clearScreen()
 		fmt.Println(mess)
 		fmt.Println("Selectionned System :", _target)
-		fmt.Println("Option", _option, "is selectionned")
-		fmt.Print("\nPress 'q' to quit : ")
 
+		switch _option {
+		case "1", "2", "3", "4", "5":
+			fmt.Println("Option", _option, "is selectionned")
+		default:
+			fmt.Println("No display")
+
+		}
+
+		fmt.Print("\nPress 'q' to quit : ")
 		var input string
 		fmt.Scanln(&input)
 		if input == "q" {
@@ -57,6 +64,8 @@ func main() {
 	timeout := 2 * time.Second
 
 	for {
+		target = ""
+
 		clearScreen()
 		fmt.Println(mess)
 		fmt.Print("Whish system do you want to scan ? (by default : localhost) : ")
@@ -72,6 +81,7 @@ func main() {
 
 		if err != nil {
 			fmt.Println("Error :", target, "is not reachable")
+			time.Sleep(3 * time.Second)
 		} else {
 		MenuLoop:
 			for {
@@ -82,17 +92,20 @@ func main() {
 				fmt.Println(menu)
 				fmt.Print("Select an option : ")
 
-				var option int
+				var option string
 				fmt.Scanln(&option)
 
 				switch option {
-				case 1, 2, 3, 4, 5:
+				case "1", "2", "3", "4", "5":
 					State(option, target)
-				case 6:
+				case "6":
 					break MenuLoop
-				case 7:
+				case "7", "q", "quit":
 					fmt.Println("C'est ciao")
 					return
+				default:
+					fmt.Println("Invalid option. Try again")
+					time.Sleep(2 * time.Second)
 				}
 			}
 		}

@@ -2,13 +2,10 @@
 header("Content-Type: application/json");
 include 'API/Alerting.php';
 require 'vendor/autoload.php';
+require 'metriques.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
-
-header('Content-Type: application/json');
-
-require 'metriques.php';
 
 function send($data, $code = 200) {
     http_response_code($code);
