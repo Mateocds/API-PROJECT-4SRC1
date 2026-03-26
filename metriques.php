@@ -110,7 +110,7 @@ function get_disk() {
     $hostname = run_ps('hostname');
 
     if ($pct > 30 ){
-        $result = CreateAlertingDisk($total, $hostname);
+        $result = CreateAlertingDisk($pct, $hostname);
         return [
             "total_gb"     => round($total / 1e9),
             "used_gb"      => round($used  / 1e9),
