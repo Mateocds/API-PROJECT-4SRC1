@@ -1,5 +1,12 @@
 <?php
 header("Content-Type: application/json");
+include 'API/Alerting.php';
+require 'vendor/autoload.php';
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+header('Content-Type: application/json');
 
 require 'metriques.php';
 
@@ -28,8 +35,3 @@ match($uri) {
     '/all'    => send(get_all()),
     default   => send_error('Endpoint not found', 404)
 };
-include 'API/Alerting.php';
-require 'vendor/autoload.php';
-
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
