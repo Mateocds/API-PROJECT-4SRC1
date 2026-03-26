@@ -224,7 +224,7 @@ function CreateAlertingDisk($diskUsage, $Hostname) {
         $AlertingData = [
             "Title" => "Alerte CPU -- Utilisation à" . $diskUsage,
             "Description" => "La Machine". $Hostname. "est arrivé à". $diskUsage. "% d'utilisation du disque à". date("d/m/Y H:i:s"),
-            "application_id" => $_ENV["APP_ID"],
+            "application_id" => $_ENV["ID_APP"],
             "status" => "OPEN",
             "severity" => $severity,
             "start_date" => date("Y-m-d"),
