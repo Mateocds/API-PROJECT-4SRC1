@@ -145,6 +145,7 @@ function CreateAlertingMemory($MemoryUsage, $Hostname) {
 
         $responseAlert = curl_exec($chAlert);
         $result = json_decode($responseAlert, true);
+        var_dump($result);
         $httpCodeAlert = curl_getinfo($chAlert, CURLINFO_HTTP_CODE);
         curl_close($chAlert);
         if ($httpCodeAlert === 201 || $httpCodeAlert === 200) {
