@@ -253,12 +253,13 @@ function CreateAlertingDisk($diskUsage, $Hostname) {
             return ($result['data']['id'] and  $severity);
         }
         else {
-            echo "Erreur ";
+            echo "Erreur". $result & $httpCodeAlert;
 
         }
 
     }
-    echo ("RAS");
+   // echo ("RAS");
+    //exit(1);
     exit(1);
 
 }
