@@ -143,7 +143,7 @@ func main() {
 		}
 		fmt.Println("System choose :", target)
 
-		address = net.JoinHostPort(target, "443")
+		address = net.JoinHostPort(target, "80")
 
 		_, err := net.DialTimeout("udp", address, timeout)
 
@@ -166,11 +166,10 @@ func main() {
 
 		MenuLoop:
 			for {
+				results, err := CheckAPI(target)
 				clearScreen()
 				fmt.Println(mess)
 				fmt.Println("Selectionned System :", target)
-
-				results, err := CheckAPI(target)
 				if err != nil {
 					fmt.Println("Error while reading API:", err)
 				} else {
@@ -182,9 +181,8 @@ func main() {
 				select {
 				case <-quitChan:
 					fmt.Println("C'est ciao")
-					time.Sleep(3 * time.Second)
 					break MenuLoop
-				case <-time.After(20 * time.Second):
+				case <-time.After(30 * time.Second):
 					continue
 				}
 			}
