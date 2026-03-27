@@ -1,8 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"net"
+	"net/http"
 	"os"
 	"os/exec"
 	"runtime"
@@ -24,6 +27,104 @@ var menu string = `---
 6. Change target system
 7. Quit`
 
+type HostInfo struct {
+	Status    string `json:"status"`
+	Hostname  string `json:"hostname"`
+	OS        string `json:"os"`
+	CheckedAt string `json:"checked_at"`
+}
+
+type CpuInfo struct {
+	UsagePercent  int    `json:"total_usage_percent"`
+	LogicalCores  int    `json:"logical_cores"`
+	PhysicalCores int    `json:"physical_cores"`
+	CheckedAt     string `json:"checked_at"`
+}
+
+type MemoryInfo struct {
+	TotalGB     float64 `json:"total_gb"`
+	UsedGB      float64 `json:"used_gb"`
+	UsedPercent float64 `json:"used_percent"`
+	CheckedAt   string  `json:"checked_at"`
+}
+
+type DiskInfo struct {
+	TotalGB     float64 `json:"total_gb"`
+	UsedGB      float64 `json:"used_gb"`
+	FreeGB      float64 `json:"free_gb"`
+	UsedPercent float64 `json:"used_percent"`
+	CheckedAt   string  `json:"checked_at"`
+}
+
+type MonitorData struct {
+	Host HostInfo   `json:"host_info"`
+	CPU  CpuInfo    `json:"cpu_info"`
+	RAM  MemoryInfo `json:"memory_info"`
+	Disk DiskInfo   `json:"disk_info"`
+}
+
+func CheckAPI(target string) (MonitorData, error) {
+	url := "http://" + target + "/api/v1/all"
+
+	var results MonitorData
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return results, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return results, err
+	}
+
+	err = json.Unmarshal(body, &results)
+	if err != nil {
+		return results, err
+	}
+
+	return results, nil
+}
+
+func printReport(data MonitorData) {
+
+	fmt.Println("--- RAPPORT ---")
+
+	fmt.Printf(`System : 
+	OS :      %s 
+	Hostname: %s
+	Status:   %s
+	`, data.Host.OS, data.Host.Status, data.Host.Status)
+
+	fmt.Println("---")
+
+	fmt.Printf(`CPU : 
+	Physical cores : %d
+	Logical cores :  %d
+	Usage Percent :  %d/100
+	`, data.CPU.PhysicalCores, data.CPU.LogicalCores, data.CPU.UsagePercent)
+
+	fmt.Println("---")
+
+	fmt.Printf(`RAM : 
+	Used : %.2f/%.2f Go
+	Usage Percent : %.2f/100
+	`, data.RAM.UsedGB, data.RAM.TotalGB, data.RAM.UsedPercent)
+
+	fmt.Println("---")
+
+	fmt.Printf(`Disque : 
+	Used : 		   %.2f/%.2f Go
+	Free : 		   %.2f Go
+	Usage Percent: %.2f/100
+	`, data.Disk.UsedGB, data.Disk.TotalGB, data.Disk.FreeGB)
+
+	fmt.Println("---")
+
+	fmt.Printf("Last Check : %s\n", data.Host.CheckedAt)
+}
+
 func clearScreen() {
 	var cmd *exec.Cmd
 	if runtime.GOOS == "windows" {
@@ -33,29 +134,6 @@ func clearScreen() {
 	}
 	cmd.Stdout = os.Stdout
 	cmd.Run()
-}
-
-func State(_option string, _target string) {
-	for {
-		clearScreen()
-		fmt.Println(mess)
-		fmt.Println("Selectionned System :", _target)
-
-		switch _option {
-		case "1", "2", "3", "4", "5":
-			fmt.Println("Option", _option, "is selectionned")
-		default:
-			fmt.Println("No display")
-
-		}
-
-		fmt.Print("\nPress 'q' to quit : ")
-		var input string
-		fmt.Scanln(&input)
-		if input == "q" {
-			return
-		}
-	}
 }
 
 func main() {
@@ -75,7 +153,7 @@ func main() {
 		}
 		fmt.Println("System choose :", target)
 
-		address = net.JoinHostPort(target, "80")
+		address = net.JoinHostPort(target, "443")
 
 		_, err := net.DialTimeout("udp", address, timeout)
 
@@ -83,29 +161,40 @@ func main() {
 			fmt.Println("Error :", target, "is not reachable")
 			time.Sleep(3 * time.Second)
 		} else {
+			quitChan := make(chan bool)
+
+			go func() {
+				for {
+					var input string
+					fmt.Scanln(&input)
+					if input == "q" || input == "quit" {
+						quitChan <- true
+						return
+					}
+				}
+			}()
+
 		MenuLoop:
 			for {
 				clearScreen()
 				fmt.Println(mess)
 				fmt.Println("Selectionned System :", target)
-				fmt.Println("What do you want to scan ?")
-				fmt.Println(menu)
-				fmt.Print("Select an option : ")
 
-				var option string
-				fmt.Scanln(&option)
+				results, err := CheckAPI(target)
+				if err != nil {
+					fmt.Println("Error while reading API:", err)
+				} else {
+					printReport(results)
+				}
 
-				switch option {
-				case "1", "2", "3", "4", "5":
-					State(option, target)
-				case "6":
-					break MenuLoop
-				case "7", "q", "quit":
+				fmt.Print("Press 'q' to quit : ")
+
+				select {
+				case <-quitChan:
 					fmt.Println("C'est ciao")
-					return
-				default:
-					fmt.Println("Invalid option. Try again")
-					time.Sleep(2 * time.Second)
+					break MenuLoop
+				case <-time.After(5 * time.Second):
+					continue
 				}
 			}
 		}
