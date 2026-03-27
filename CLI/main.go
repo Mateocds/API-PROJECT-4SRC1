@@ -17,16 +17,6 @@ var mess string = `Welcome to our CLI - Group N°2
 This program permets you to observe all states of your system
 -------------------------------------------------------------`
 
-var menu string = `---
-1. HEALTH state
-2. CPU state
-3. MEMORY state
-4. DISK state
-5. ALL
----
-6. Change target system
-7. Quit`
-
 type HostInfo struct {
 	Status    string `json:"status"`
 	Hostname  string `json:"hostname"`
@@ -118,7 +108,7 @@ func printReport(data MonitorData) {
 	Used : 		   %.2f/%.2f Go
 	Free : 		   %.2f Go
 	Usage Percent: %.2f/100
-	`, data.Disk.UsedGB, data.Disk.TotalGB, data.Disk.FreeGB)
+	`, data.Disk.UsedGB, data.Disk.TotalGB, data.Disk.FreeGB, data.Disk.UsedPercent)
 
 	fmt.Println("---")
 
