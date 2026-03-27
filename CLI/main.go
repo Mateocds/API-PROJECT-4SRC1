@@ -85,7 +85,7 @@ func printReport(data MonitorData) {
 	OS :      %s 
 	Hostname: %s
 	Status:   %s
-	`, data.Host.OS, data.Host.Status, data.Host.Status)
+	`, data.Host.OS, data.Host.Hostname, data.Host.Status)
 
 	fmt.Println("---")
 
@@ -98,16 +98,16 @@ func printReport(data MonitorData) {
 	fmt.Println("---")
 
 	fmt.Printf(`RAM : 
-	Used : %.2f/%.2f Go
+	Used :          %.2f/%.2f Go
 	Usage Percent : %.2f/100
 	`, data.RAM.UsedGB, data.RAM.TotalGB, data.RAM.UsedPercent)
 
 	fmt.Println("---")
 
 	fmt.Printf(`Disque : 
-	Used : 		   %.2f/%.2f Go
-	Free : 		   %.2f Go
-	Usage Percent: %.2f/100
+	Used : 		    %.2f/%.2f Go
+	Free : 		    %.2f Go
+	Usage Percent:  %.2f/100
 	`, data.Disk.UsedGB, data.Disk.TotalGB, data.Disk.FreeGB, data.Disk.UsedPercent)
 
 	fmt.Println("---")
