@@ -54,7 +54,7 @@ type MonitorData struct {
 }
 
 func CheckAPI(target string) (MonitorData, error) {
-	url := "http://" + target + "/api/v1/all"
+	url := "http://" + target + ":8000/api/v1/all"
 
 	var results MonitorData
 
@@ -118,7 +118,7 @@ func printReport(data MonitorData) {
 func clearScreen() {
 	var cmd *exec.Cmd
 	if runtime.GOOS == "windows" {
-		cmd = exec.Command("cls")
+		cmd = exec.Command("clear")
 	} else {
 		cmd = exec.Command("clear")
 	}
@@ -182,8 +182,9 @@ func main() {
 				select {
 				case <-quitChan:
 					fmt.Println("C'est ciao")
+					time.Sleep(3 * time.Second)
 					break MenuLoop
-				case <-time.After(5 * time.Second):
+				case <-time.After(20 * time.Second):
 					continue
 				}
 			}
