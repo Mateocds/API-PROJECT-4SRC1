@@ -16,14 +16,28 @@ function get_health() {
     $hostname = run_ps('hostname');
     $os       = run_ps('(Get-WmiObject Win32_OperatingSystem).Caption');
 
+    $cpu    = get_cpu();
+    $memory = get_memory();
+    $disk   = get_disk();
+
+    $cpuUsage    = $cpu["total_usage_percent"] ?? 0;
+    $memoryUsage = $memory["used_percent"] ?? 0;
+    $diskUsage   = $disk["used_percent"] ?? 0;
+
+    $status = "UP";
+
+    if ($cpuUsage > 90 || $memoryUsage > 90 || $diskUsage > 90) {
+        $status = "DOWN";
+    } elseif ($cpuUsage > 70 || $memoryUsage > 70 || $diskUsage > 70) {
+        $status = "WARNING";
+    }
 
     return [
-        "status"     => "UP",
+        "status"     => $status,
         "hostname"   => $hostname,
         "os"         => "windows",
         "platform"   => $os,
         "checked_at" => fmt_date()
-
     ];
 }
 
